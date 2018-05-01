@@ -496,7 +496,15 @@
       [finalResults addObject:entry];
     }
 
-    CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus: CDVCommandStatus_OK messageAsArray:finalResults];
+    CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus: CDVCommandStatus_OK messageAsInt:finalResults];
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+  }];
+}
+
+// iOS doesn't use the primary calendar ID
+- (void) getPrimaryCalendarId:(CDVInvokedUrlCommand*)command {
+  [self.commandDelegate runInBackground: ^{
+    CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus: CDVCommandStatus_OK messageAsInt:0];
     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
   }];
 }

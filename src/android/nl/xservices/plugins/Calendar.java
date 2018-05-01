@@ -24,6 +24,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Date;
+import java.util.NoSuchElementException;
 import java.util.TimeZone;
 import java.text.SimpleDateFormat;
 
@@ -46,6 +47,7 @@ public class Calendar extends CordovaPlugin {
   private static final String ACTION_FIND_EVENT_WITH_OPTIONS = "findEventWithOptions";
   private static final String ACTION_LIST_EVENTS_IN_RANGE = "listEventsInRange";
   private static final String ACTION_LIST_CALENDARS = "listCalendars";
+  private static final String ACTION_GET_PRIMARY_CALENDAR = "getPrimaryCalendar";
   private static final String ACTION_CREATE_CALENDAR = "createCalendar";
   private static final String ACTION_DELETE_CALENDAR = "deleteCalendar";
 
@@ -59,6 +61,7 @@ public class Calendar extends CordovaPlugin {
   private static final int PERMISSION_REQCODE_FIND_EVENTS = 200;
   private static final int PERMISSION_REQCODE_LIST_CALENDARS = 201;
   private static final int PERMISSION_REQCODE_LIST_EVENTS_IN_RANGE = 202;
+  private static final int PERMISSION_REQCODE_GET_PRIMARY_CALENDAR = 203;
 
   private static final Integer RESULT_CODE_CREATE = 0;
   private static final Integer RESULT_CODE_OPENCAL = 1;
@@ -104,6 +107,9 @@ public class Calendar extends CordovaPlugin {
       return true;
     } else if (ACTION_LIST_CALENDARS.equals(action)) {
       listCalendars();
+      return true;
+    } else if (ACTION_GET_PRIMARY_CALENDAR.equals(action)) {
+      getPrimaryCalendar();
       return true;
     } else if (!hasLimitedSupport && ACTION_CREATE_CALENDAR.equals(action)) {
       createCalendar(args);
@@ -200,6 +206,8 @@ public class Calendar extends CordovaPlugin {
       findEvents(requestArgs);
     } else if (requestCode == PERMISSION_REQCODE_LIST_CALENDARS) {
       listCalendars();
+    } else if (requestCode == PERMISSION_REQCODE_GET_PRIMARY_CALENDAR) {
+      getPrimaryCalendar();
     } else if (requestCode == PERMISSION_REQCODE_LIST_EVENTS_IN_RANGE) {
       listEventsInRange(requestArgs);
     }
@@ -267,6 +275,24 @@ public class Calendar extends CordovaPlugin {
           }
           callback.sendPluginResult(new PluginResult(PluginResult.Status.OK, activeCalendars));
         } catch (JSONException e) {
+          System.err.println("Exception: " + e.getMessage());
+          callback.error(e.getMessage());
+        }
+      }
+    });
+  }
+  
+  private void getPrimaryCalendar() {
+    if (!calendarPermissionGranted(Manifest.permission.READ_CALENDAR)) {
+      requestReadPermission(PERMISSION_REQCODE_GET_PRIMARY_CALENDAR);
+      return;
+    }
+    cordova.getThreadPool().execute(new Runnable() {
+      @Override
+      public void run() {
+        try {
+          callback.sendPluginResult(new PluginResult(PluginResult.Status.OK, getCalendarAccessor().getPrimaryCalendarId()));
+        } catch (NoSuchElementException e) {
           System.err.println("Exception: " + e.getMessage());
           callback.error(e.getMessage());
         }

@@ -133,6 +133,7 @@ public abstract class AbstractCalendarAccessor {
         CALENDARS_NAME,
         CALENDARS_VISIBLE,
         CALENDARS_DISPLAY_NAME,
+        CALENDARS_PRIMARY,
         EVENTS_ID,
         EVENTS_CALENDAR_ID,
         EVENTS_DESCRIPTION,
@@ -290,6 +291,20 @@ public abstract class AbstractCalendarAccessor {
             cursor.close();
         }
         return calendarsWrapper;
+    }
+    
+    public final int getPrimaryCalendarId() {
+        Cursor cursor = queryCalendars(new String[]{
+                this.getKey(KeyIndex.CALENDARS_ID)
+        }, this.getKey(KeyIndex.CALENDARS_VISIBLE) + "=1 AND " + this.getKey(KeyIndex.CALENDARS_PRIMARY) + "=1", null, null);
+        
+        if(cursor != null && cursor.moveToFirst()){
+            int col = cursor.getColumnIndex(this.getKey(KeyIndex.CALENDARS_ID));
+            return cursor.getInt(col);
+        }
+        
+        String[] ids = getActiveCalendarIds();
+        return Arrays.stream(ids).mapToInt(Integer::parseInt).min().getAsInt();        
     }
 
     private Map<String, Event> fetchEventsAsMap(Event[] instances, String calendarId) {
