@@ -1,6 +1,6 @@
 {
   "name": "softwire-cordova-plugin-calendar",
-  "version": "5.0.3",
+  "version": "5.0.4",
   "description": "This plugin allows you to manipulate the native calendar.",
   "cordova": {
     "id": "softwire-cordova-plugin-calendar",
@@ -22,7 +22,6 @@
       "name": "cordova",
       "version": ">=3.0.0"
     }
-
   ],
   "license": "MIT"
 }
