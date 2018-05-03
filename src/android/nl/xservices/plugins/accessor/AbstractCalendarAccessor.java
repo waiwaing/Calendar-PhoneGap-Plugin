@@ -252,7 +252,9 @@ public abstract class AbstractCalendarAccessor {
         Cursor cursor = queryCalendars(new String[]{
                         this.getKey(KeyIndex.CALENDARS_ID)
                 },
-                this.getKey(KeyIndex.CALENDARS_VISIBLE) + "=1", null, null);
+                this.getKey(KeyIndex.CALENDARS_VISIBLE) + "=1",
+                null,
+                this.getKey(KeyIndex.Calendars_ID) + " ASC");
         String[] calendarIds = null;
         if (cursor.moveToFirst()) {
             calendarIds = new String[cursor.getCount()];
@@ -302,9 +304,8 @@ public abstract class AbstractCalendarAccessor {
             int col = cursor.getColumnIndex(this.getKey(KeyIndex.CALENDARS_ID));
             return cursor.getInt(col);
         }
-        
-        String[] ids = getActiveCalendarIds();
-        return Arrays.stream(ids).mapToInt(Integer::parseInt).min().getAsInt();        
+
+        return Integer.parseInt(getActiveCalendarIds()[0]);        
     }
 
     private Map<String, Event> fetchEventsAsMap(Event[] instances, String calendarId) {
