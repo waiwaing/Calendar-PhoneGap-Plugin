@@ -254,7 +254,7 @@ public abstract class AbstractCalendarAccessor {
                 },
                 this.getKey(KeyIndex.CALENDARS_VISIBLE) + "=1",
                 null,
-                this.getKey(KeyIndex.Calendars_ID) + " ASC");
+                this.getKey(KeyIndex.CALENDARS_ID) + " ASC");
         String[] calendarIds = null;
         if (cursor.moveToFirst()) {
             calendarIds = new String[cursor.getCount()];
